@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    environment:
+      - MODEL_NAME=mistral:8b
+    ports:
+      - "8000:8000"
+    command: ollama serve --model $MODEL_NAME
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Ensure this matches the name of your Dockerfile
+    container_name: streamlit
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "8501:8501"
+    depends_on:
+      - ollama
+    command: streamlit run your_streamlit_app.py --server.port=8501 --server.address=0.0.0.0
